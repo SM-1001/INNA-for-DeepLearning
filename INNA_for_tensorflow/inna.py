@@ -147,7 +147,7 @@ class NADIANOptimizer(optimizer.Optimizer):
                  epsilon=1e-8,
                  mu=0.9,
                  use_locking=False,
-                 name="INNA"):
+                 name="NADIAN"):
    
     super(NADIANOptimizer, self).__init__(use_locking,name)
     self._iterations = 0
