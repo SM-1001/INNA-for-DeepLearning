@@ -131,6 +131,103 @@ class INNAOptimizer(optimizer.Optimizer):
     raise NotImplementedError("Sparse gradient updates are not supported yet.")
 
 
+@tf_export(v1=["train.AdamOptimizer"])
+class NADIANOptimizer(optimizer.Optimizer):
+  """Optimizer that implements the INNA algorithm.
+  See [Castera et al., 2019](https://arxiv.org/abs/1905.12278).
+  """
+
+  def __init__(self,
+                 lr=0.01,
+                 alpha=0.5,
+                 beta=0.1,
+                 decay=1.,
+                 decaypower = 0.5,
+                 speed_ini=1.0,
+                 epsilon=1e-8,
+                 mu=0.9,
+                 use_locking=False,
+                 name="INNA"):
+   
+    super(INNAOptimizer, self).__init__(use_locking,name)
+    self._iterations = 0
+    self._lr = lr
+    self._alpha = alpha
+    self._beta = beta
+    self._epsilon = epsilon
+    self._mu = mu
+    self._decay = decay
+    self._decaypower = decaypower
+    self._speed_ini = speed_ini
+
+    # Tensor versions of the constructor arguments, created in _prepare().
+    self._lr_t = None
+    self._alpha_t = None
+    self._beta_t = None
+    self._epsilon_t = None
+    self._decay_t = None
+    self._mu_t = None
+    self._decaypower_t = None
+    self._speed_ini_t = None
+
+
+  def _create_slots(self, var_list):
+    # Create slots for the auxiliary variable.
+    for v in var_list:
+      self._zeros_slot(v, "v1", self._name)
+    for tmp_grad in var_list:
+      self._zeros_slot(tmp_grad, "tmp_g", self._name)
+
+  def _prepare(self):
+    lr = self._call_if_callable(self._lr)
+    alpha = self._call_if_callable(self._alpha)
+    beta = self._call_if_callable(self._beta)
+    epsilon = self._call_if_callable(self._epsilon)
+    mu = self._call_if_callable(self._mu)
+    decay = self._call_if_callable(self._decay)
+    decaypower = self._call_if_callable(self._decaypower)
+    speed_ini = self._call_if_callable(self._speed_ini)
+    
+
+    self._lr_t = ops.convert_to_tensor(self._lr, name="lr")
+    self._alpha_t = ops.convert_to_tensor(self._alpha, name="alpha")
+    self._beta_t = ops.convert_to_tensor(self._beta, name="beta")
+    self._epsilon_t = ops.convert_to_tensor(self._epsilon, name="epsilon")
+    self._mu_t = ops.convert_to_tensor(self._mu, name="mu")
+    self._decay_t = ops.convert_to_tensor(self._decay, name="decay")
+    self._decaypower_t = ops.convert_to_tensor(self._decaypower, name="decaypower")
+    self._speed_ini_t = ops.convert_to_tensor(self._speed_ini, name="speed_ini")
+
+  def _apply_dense(self, grad, var):
+    lr_t = math_ops.cast(self._lr_t, var.dtype.base_dtype)
+    alpha_t = math_ops.cast(self._alpha_t, var.dtype.base_dtype)
+    beta_t = math_ops.cast(self._beta_t, var.dtype.base_dtype)
+    epsilon_t = math_ops.cast(self._epsilon_t, var.dtype.base_dtype)
+    mu_t = math_ops.cast(self._mu_t, var.dtype.base_dtype)
+    decay_t = math_ops.cast(self._decay_t, var.dtype.base_dtype)
+    decaypower_t = math_ops.cast(self._decaypower_t, var.dtype.base_dtype)
+    speed_ini_t = math_ops.cast(self._speed_ini_t, var.dtype.base_dtype)
+    
+
+    v = self.get_slot(var, "v1")
+    tmp_grad = self.get_slot(var, "tmp_g")
+    #(1.-self.alpha*self.beta)*p )
+    #Initialise v such that the initial speed is in the direction of -grad
+    v_temp = cond( equal(num_iter(),0) ,
+      lambda : (1.-alpha_t*beta_t) * var - beta_t**2 * grad + beta_t * speed_ini_t * grad, lambda : v )
+    
+    tmp_g = cond( equal(num_iter(),0) ,
+      lambda : (grad, lambda : tmp_g )
+    
+    v_t = v.assign( v_temp - ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp ) )
+   
+    var_update = state_ops.assign_sub( var, ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp + beta_t * ((1+MU) * grad - MU * tmp_grad) ) #Update 'ref' by subtracting 'value
+    
+    return control_flow_ops.group(*[var_update, v_t])
+
+
+  def _apply_sparse(self, grad, var):
+    raise NotImplementedError("Sparse gradient updates are not supported yet.")
 
 
     #### EXAMPLE https://github.com/angetato/Optimizers-for-Tensorflow/blob/master/tf_utils/AAdam.py  #####
