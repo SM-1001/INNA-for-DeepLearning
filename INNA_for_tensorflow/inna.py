@@ -175,8 +175,8 @@ class NADIANOptimizer(optimizer.Optimizer):
     # Create slots for the auxiliary variable.
     for v in var_list:
       self._zeros_slot(v, "v1", self._name)
-    for tmp_grad in var_list:
-      self._zeros_slot(tmp_grad, "tmp_g", self._name)
+    for g in var_list:
+      self._zeros_slot(g, "g1", self._name)
 
   def _prepare(self):
     lr = self._call_if_callable(self._lr)
@@ -208,24 +208,26 @@ class NADIANOptimizer(optimizer.Optimizer):
     decaypower_t = math_ops.cast(self._decaypower_t, var.dtype.base_dtype)
     speed_ini_t = math_ops.cast(self._speed_ini_t, var.dtype.base_dtype)
     
-
+    g = self.get_slot(var, "g1")
+    g_temp = cond( equal(num_iter(),0) ,
+      lambda : (grad, lambda : g )
+    
     v = self.get_slot(var, "v1")
-    tmp_grad = self.get_slot(var, "tmp_g")
     #(1.-self.alpha*self.beta)*p )
     #Initialise v such that the initial speed is in the direction of -grad
     v_temp = cond( equal(num_iter(),0) ,
       lambda : (1.-alpha_t*beta_t) * var - beta_t**2 * grad + beta_t * speed_ini_t * grad, lambda : v )
     
-    g_tmp = cond( equal(num_iter(),0) ,
-       lambda : (grad, lambda : tmp_grad )
+    #g_tmp = cond( equal(num_iter(),0) ,
+       #lambda : (grad, lambda : tmp_grad )
          
     
     v_t = v.assign( v_temp - ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp ) )
    
-    var_update = state_ops.assign_sub( var, ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp + beta_t * ((1+MU) * grad - MU * g_tmp) ) #Update 'ref' by subtracting 'value
+    var_update = state_ops.assign_sub( var, ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp + beta_t * ((1+MU) * grad - MU * pre_grad) ) #Update 'ref' by subtracting 'value
     
                                  
-    g_tmp = tmp_grad.assing(grad)
+    pre_grad = g.assing(g_temp)
                                       
     return control_flow_ops.group(*[var_update, v_t])
     
