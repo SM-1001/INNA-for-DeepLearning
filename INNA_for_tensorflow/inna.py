@@ -217,7 +217,7 @@ class NADIANOptimizer(optimizer.Optimizer):
       lambda : (1.-alpha_t*beta_t) * var - beta_t**2 * grad + beta_t * speed_ini_t * grad, lambda : v )
     
     g_tmp = cond( equal(num_iter(),0) ,
-        lambda : (grad, lambda : tmp_grad )
+       lambda : (grad, lambda : tmp_grad )
          
     
     v_t = v.assign( v_temp - ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp ) )
