@@ -149,7 +149,7 @@ class NADIANOptimizer(optimizer.Optimizer):
                  use_locking=False,
                  name="INNA"):
    
-    super(INNAOptimizer, self).__init__(use_locking,name)
+    super(NADIANOptimizer, self).__init__(use_locking,name)
     self._iterations = 0
     self._lr = lr
     self._alpha = alpha
