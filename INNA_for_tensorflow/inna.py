@@ -208,19 +208,16 @@ class NADIANOptimizer(optimizer.Optimizer):
     decaypower_t = math_ops.cast(self._decaypower_t, var.dtype.base_dtype)
     speed_ini_t = math_ops.cast(self._speed_ini_t, var.dtype.base_dtype)
     
-    g = self.get_slot(var, "g1")
-    g_temp = cond( equal(num_iter(),0) ,
-      lambda : (grad, lambda : g )
     
     v = self.get_slot(var, "v1")
     #(1.-self.alpha*self.beta)*p )
     #Initialise v such that the initial speed is in the direction of -grad
     v_temp = cond( equal(num_iter(),0) ,
       lambda : (1.-alpha_t*beta_t) * var - beta_t**2 * grad + beta_t * speed_ini_t * grad, lambda : v )
-    
-    #g_tmp = cond( equal(num_iter(),0) ,
-       #lambda : (grad, lambda : tmp_grad )
          
+    g = self.get_slot(var, "g1")
+    g_temp = cond( equal(num_iter(),0) ,
+        lambda : (grad, lambda : g )
     
     v_t = v.assign( v_temp - ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp ) )
    
