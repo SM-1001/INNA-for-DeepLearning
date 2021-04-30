@@ -215,7 +215,7 @@ class NADIANOptimizer(optimizer.Optimizer):
     v_temp = cond( equal(num_iter(),0) ,
       lambda : (1.-alpha_t*beta_t) * var - beta_t**2 * grad + beta_t * speed_ini_t * grad, lambda : v )
          
-    g = self.get_slot(var, "g1")
+    g = self.get_slot(grad, "g1")
     g_temp = cond( equal(num_iter(),0) ,
         lambda : grad, lambda : g )
     
@@ -223,7 +223,7 @@ class NADIANOptimizer(optimizer.Optimizer):
    
     var_update = state_ops.assign_sub( var, ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp + beta_t * ((1. + mu) * grad - mu * pre_grad) ) #Update 'ref' by subtracting 'value
                               
-    pre_grad = g.assing(g_temp)
+    pre_grad = g.assign(g_temp)
                                       
     return control_flow_ops.group(*[var_update, v_t])
     
