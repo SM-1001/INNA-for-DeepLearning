@@ -220,9 +220,11 @@ class NADIANOptimizer(optimizer.Optimizer):
    
     var_update = state_ops.assign_sub( var, ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp + beta_t * ((1+MU) * grad - MU * tmp_grad) ) #Update 'ref' by subtracting 'value
     
-    
-    return control_flow_ops.group(*[var_update, v_t])
+                                      
     tmp_g = grad
+                                      
+    return control_flow_ops.group(*[var_update, v_t])
+    
 
   def _apply_sparse(self, grad, var):
     raise NotImplementedError("Sparse gradient updates are not supported yet.")
