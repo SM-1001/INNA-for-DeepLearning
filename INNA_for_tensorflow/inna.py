@@ -133,7 +133,7 @@ class INNAOptimizer(optimizer.Optimizer):
 
 @tf_export(v1=["train.AdamOptimizer"])
 class NADIANOptimizer(optimizer.Optimizer):
-  """Optimizer that implements the INNA algorithm.
+  """Optimizer that implements the NADIAN algorithm.
   See [Castera et al., 2019](https://arxiv.org/abs/1905.12278).
   """
 
@@ -215,7 +215,7 @@ class NADIANOptimizer(optimizer.Optimizer):
     v_temp = cond( equal(num_iter(),0) ,
       lambda : (1.-alpha_t*beta_t) * var - beta_t**2 * grad + beta_t * speed_ini_t * grad, lambda : v )
          
-    g = self.get_slot(grad, "g1")
+    g = self.get_slot(var, "g1")
     g_temp = cond( equal(num_iter(),0) ,
         lambda : grad, lambda : g )
     
