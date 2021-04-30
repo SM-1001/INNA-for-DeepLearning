@@ -216,16 +216,16 @@ class NADIANOptimizer(optimizer.Optimizer):
     v_temp = cond( equal(num_iter(),0) ,
       lambda : (1.-alpha_t*beta_t) * var - beta_t**2 * grad + beta_t * speed_ini_t * grad, lambda : v )
     
-    #g = cond( equal(num_iter(),0) ,
-     #lambda : (grad, lambda : tmp_grad )
+    g_tmp = cond( equal(num_iter(),0) ,
+        lambda : (grad, lambda : tmp_grad )
          
     
     v_t = v.assign( v_temp - ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp ) )
    
-    var_update = state_ops.assign_sub( var, ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp + beta_t * ((1+MU) * grad - MU * tmp_g) ) #Update 'ref' by subtracting 'value
+    var_update = state_ops.assign_sub( var, ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp + beta_t * ((1+MU) * grad - MU * g_tmp) ) #Update 'ref' by subtracting 'value
     
                                  
-    tmp_g = assing(grad)
+    g_tmp = tmp_grad.assing(grad)
                                       
     return control_flow_ops.group(*[var_update, v_t])
     
