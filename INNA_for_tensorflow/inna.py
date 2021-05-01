@@ -43,6 +43,7 @@ from tensorflow.python.util.tf_export import tf_export
 from tensorflow.train import get_global_step as num_iter
 from tensorflow import cond
 from tensorflow.math import equal
+import tensorflow as tf
 
 @tf_export(v1=["train.AdamOptimizer"])
 class INNAOptimizer(optimizer.Optimizer):
@@ -225,8 +226,8 @@ class NADIANOptimizer(optimizer.Optimizer):
     
     var_update = state_ops.assign_sub( var, ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp + beta_t * ((1. + mu_t) * grad - mu_t * pre_g)) ) #Update 'ref' by subtracting 'value
                               
-    print("grad=",tensorflow.eval(grad))
-    print("pregrad=",tensorflow.eval(pre_g))
+    print("grad=",tf.eval(grad))
+    print("pregrad=",tf.eval(pre_g))
     return control_flow_ops.group(*[var_update, v_t])
     
 
