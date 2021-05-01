@@ -27,7 +27,6 @@ Args:
     speed_ini: The initial velocity is in the direction of the speepest descent:
     it is in exactly - speed_ini* gradient. Default is 1., we recommend to keep this parameter unchanged.
 """
-import tensorflow as tf
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -226,8 +225,8 @@ class NADIANOptimizer(optimizer.Optimizer):
     
     var_update = state_ops.assign_sub( var, ( lr_t * decay_t / math_ops.pow(math_ops.cast(num_iter()+1, var.dtype.base_dtype),decaypower_t) ) * ( (alpha_t-1./beta_t) * var + 1./beta_t * v_temp + beta_t * ((1. + mu_t) * grad - mu_t * pre_g)) ) #Update 'ref' by subtracting 'value
                               
-    print("grad=",tf.eval(grad))
-    print("pregrad=",tf.eval(pre_g))
+    print("grad=",tensorflow.eval(grad))
+    print("pregrad=",tensorflow.eval(pre_g))
     return control_flow_ops.group(*[var_update, v_t])
     
 
