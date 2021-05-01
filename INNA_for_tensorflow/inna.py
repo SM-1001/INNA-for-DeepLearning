@@ -44,6 +44,7 @@ from tensorflow.train import get_global_step as num_iter
 from tensorflow import cond
 from tensorflow.math import equal
 import tensorflow as tf
+from tensorflow.keras.backend import eval
 
 @tf_export(v1=["train.AdamOptimizer"])
 class INNAOptimizer(optimizer.Optimizer):
