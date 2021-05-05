@@ -41,7 +41,7 @@ class INNA(Optimizer):
                  epsilon=None,
                  **kwargs):
                  
-        super(INNA, self).__init__(name=name, **kwargs)
+        super(INNA, self).__init__(name="INNA", **kwargs)
         with K.name_scope(self.__class__.__name__):
             self.iterations = K.variable(0, dtype='int64', name='iterations')
             self.lr = K.variable(lr, name='lr')
