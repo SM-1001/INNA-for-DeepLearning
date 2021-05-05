@@ -143,7 +143,7 @@ class NADIAN(Optimizer):
                  epsilon=None,
                  **kwargs):
                  
-        super(NADIAN, self).__init__(**kwargs)
+        super(NADIAN, self).__init__(name="NADIAN",**kwargs)
         with K.name_scope(self.__class__.__name__):
             self.iterations = K.variable(0, dtype='int64', name='iterations')
             self.lr = K.variable(lr, name='lr')
