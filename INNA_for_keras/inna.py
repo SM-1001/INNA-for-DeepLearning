@@ -1,5 +1,6 @@
 from keras.optimizers import *
 from keras.legacy import interfaces
+from keras import backend as K
 
 
 class INNA(Optimizer):
