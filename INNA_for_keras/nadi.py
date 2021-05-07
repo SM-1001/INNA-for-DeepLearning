@@ -76,12 +76,17 @@ class NADIAN(Optimizer):
             #Warning, (p,v) correspond to (theta,psi) in the paper
             lr_t = lr
             
+            pre_g = g
+            # Apply constraints.
+            if getattr(g, 'constraint', None) is not None:
+                pre_g = g.constraint(pre_g)
+            
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
                         v - self.beta**2*g + self.beta*self.speed_ini*g , v )
             #
             v_t =  v_temp + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp  )
-            p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g )
+            p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * ((1. + self.mu) * g - self.mu * pre_g))
             
             new_p = p_t
             # Apply constraints.
