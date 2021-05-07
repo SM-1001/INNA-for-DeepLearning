@@ -61,7 +61,7 @@ class NADIAN(Optimizer):
     @interfaces.legacy_get_updates_support
     def get_updates(self, loss, params):
        #grads = self.get_gradients(loss, params)
-        if self.iteration == 0 :
+        if self.iterations == 0 :
             c == params
         else :
             c=params + self.mu *(params - pre_p)
