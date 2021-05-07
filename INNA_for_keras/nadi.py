@@ -59,7 +59,7 @@ class NADIAN(Optimizer):
         self.epsilon = epsilon
     
     @interfaces.legacy_get_updates_support
-    def get_updates(self, loss, params):
+    def get_updates(self, loss, params, pre_p):
        #grads = self.get_gradients(loss, params)
         c = params + self.mu *(params - pre_p)
         grads = self.get_gradients(loss, c)
@@ -74,7 +74,7 @@ class NADIAN(Optimizer):
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
         self.weights =  [self.iterations] + psi
         
-        for p, g, v in zip(params, grads, psi) :
+        for p, pre_p, g, v in zip(params, pre_p, grads, psi) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
             lr_t = lr
             
@@ -104,7 +104,7 @@ class NADIAN(Optimizer):
                 
             self.updates.append(K.update(v, v_t))
             self.updates.append(K.update(p, new_p))
-
+            self.updates.append(K.update(p, pre_p))
         return self.updates
 
     def get_config(self):
