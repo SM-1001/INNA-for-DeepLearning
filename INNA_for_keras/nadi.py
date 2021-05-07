@@ -74,7 +74,12 @@ class NADIAN(Optimizer):
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
         self.weights =  [self.iterations] + psi
         
-        for p, pre_p, g, v in zip(params, pre_p, grads, psi) :
+        pre_p = params
+        # Apply constraints.
+        if getattr(params, 'constraint', None) is not None:
+            pre_p = params.constraint(pre_p)
+        
+        for p, g, v in zip(params, grads, psi) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
             lr_t = lr
             
@@ -84,11 +89,12 @@ class NADIAN(Optimizer):
             if getattr(g, 'constraint', None) is not None:
                 pre_g = g.constraint(pre_g)
             '''
+            '''
             pre_p = p_t
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
                 pre_p = p.constraint(pre_p)
-            
+            '''
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
                         v - self.beta**2*g + self.beta*self.speed_ini*g , v )
@@ -104,7 +110,7 @@ class NADIAN(Optimizer):
                 
             self.updates.append(K.update(v, v_t))
             self.updates.append(K.update(p, new_p))
-            self.updates.append(K.update(p, pre_p))
+            
         return self.updates
 
     def get_config(self):
