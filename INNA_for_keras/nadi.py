@@ -35,6 +35,7 @@ class NADIAN(Optimizer):
                  lr=0.01,
                  alpha=0.5,
                  beta=0.1,
+                 mu=0.9,
                  decay=1.,
                  decaypower = 0.5,
                  speed_ini=1.0,
@@ -47,6 +48,7 @@ class NADIAN(Optimizer):
             self.lr = K.variable(lr, name='lr')
             self.alpha = K.variable(alpha, name='alpha')
             self.beta = K.variable(beta, name='beta')
+            self.mu = K.variable(mu, name='mu')
             self.decay =K.variable(decay, name='decay')
             self.decaypower = K.variable(decaypower,name='decaypower')
             self.initial_decay = decay
@@ -95,6 +97,7 @@ class NADIAN(Optimizer):
         config = {'lr': float(K.get_value(self.lr)),
                   'alpha': float(K.get_value(self.alpha)),
                   'beta': float(K.get_value(self.beta)),
+                  'mu': float(K.get_value(self.mu)),
                   'decay': float(K.get_value(self.decay)),
                   'speed_ini' : self.speed_ini
                  }
