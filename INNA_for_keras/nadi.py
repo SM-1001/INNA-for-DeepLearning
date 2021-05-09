@@ -61,6 +61,8 @@ class NADIAN(Optimizer):
     @interfaces.legacy_get_updates_support
     def get_updates(self, loss, params):
         global c, pre_params
+        if self.iterations == 0:
+            pre_params = params
        #grads = self.get_gradients(loss, params)
         c = K.switch(self.iterations == 0, params, params + self.mu *(params - pre_params))
         grads = self.get_gradients(loss, c)
@@ -90,10 +92,7 @@ class NADIAN(Optimizer):
                 pre_g = g.constraint(pre_g)
             '''
             
-            pre_p = p_t
-            # Apply constraints.
-            if getattr(p, 'constraint', None) is not None:
-                pre_p = p.constraint(pre_p)
+            pre_params = p_t
             
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
@@ -110,7 +109,6 @@ class NADIAN(Optimizer):
                 
             self.updates.append(K.update(v, v_t))
             self.updates.append(K.update(p, new_p))
-            self.updates.append(K.update(pre_p, pre_p))
             
         return self.updates
 
