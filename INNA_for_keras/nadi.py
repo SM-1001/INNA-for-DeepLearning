@@ -68,7 +68,7 @@ class NADIAN(Optimizer):
         if self.iterations == 0:
             c = params
         else :
-            [p + self.mu * n_v for p, n_v in zip(params, nest_v)]
+            c = [p + self.mu * n_v for p, n_v in zip(params, nest_v)]
         #c = K.switch(self.iterations == 0, params, [p + self.mu * n_v for p, n_v in zip(params, nest_v)])
         grads = self.get_gradients(loss, c)
         self.updates = [K.update_add(self.iterations, 1)]
