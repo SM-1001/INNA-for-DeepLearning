@@ -79,7 +79,7 @@ class NADIAN(Optimizer):
             lr_t = lr
             
             
-            #pre_g = g
+            pre_g = g
             # Apply constraints.
             if getattr(g, 'constraint', None) is not None:
                 pre_g = g.constraint(pre_g)
