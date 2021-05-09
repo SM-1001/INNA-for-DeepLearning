@@ -62,6 +62,7 @@ class NADIAN(Optimizer):
     def get_updates(self, loss, params):
        #grads = self.get_gradients(loss, params)
         if self.iterations == 0 :
+            c = [ K.variable(p) for p in params ]
             c = params
         #K.switch(self.iteration == 0, c=params, c=params + self.mu *(params - pre_p)
         grads = self.get_gradients(loss, c)
@@ -76,6 +77,7 @@ class NADIAN(Optimizer):
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
         self.weights =  [self.iterations] + psi
         
+        pre_p = [ K.variable(p) for p in params ]
         pre_p = params
         # Apply constraints.
         if getattr(params, 'constraint', None) is not None:
