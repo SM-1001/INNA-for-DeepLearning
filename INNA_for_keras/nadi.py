@@ -62,7 +62,6 @@ class NADIAN(Optimizer):
     def get_updates(self, loss, params):
         
         grads = self.get_gradients(loss, params)
-        pre_params = [K.variable(p) for p in params]
         self.updates = [K.update_add(self.iterations, 1)]
         
         lr = self.lr
@@ -73,9 +72,8 @@ class NADIAN(Optimizer):
         #psi such that initial speed is orthogonal
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
         self.weights =  [self.iterations] + psi
-        #self.weights = accumulators   
                
-        for p, g, v, pre_p in zip(params, grads, psi, pre_params) :
+        for p, g, v in zip(params, grads, psi) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
             lr_t = lr
             
@@ -86,7 +84,6 @@ class NADIAN(Optimizer):
                 pre_g = g.constraint(pre_g)
             '''
           
-            print('p=', p, 'pre_p=', pre_p)
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
                         v - self.beta**2*g + self.beta*self.speed_ini*g , v )
@@ -94,8 +91,10 @@ class NADIAN(Optimizer):
             v_t =  v_temp + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp  )
             #p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * ((1. + self.mu) * g - self.mu * pre_g))
             p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
-                         
-            new_p = p_t + self.mu * (p_t - p)
+             
+            new_p = K.switch(self.iterations == 0,
+                        p_t , p_t + self.mu * (p_t - p))    
+            #new_p = p_t + self.mu * (p_t - p)
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
                 new_p = p.constraint(new_p)
