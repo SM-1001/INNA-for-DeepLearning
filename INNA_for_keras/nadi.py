@@ -114,7 +114,6 @@ class NADIAN(Optimizer):
                 
             self.updates.append(K.update(v, v_t))
             self.updates.append(K.update(p, new_p))
-            self.updates.append(K.update(pre_p, pre_p))
             
         return self.updates
 
