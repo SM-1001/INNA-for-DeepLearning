@@ -75,7 +75,7 @@ class NADIAN(Optimizer):
         self.weights =  [self.iterations] + psi
         
         p_grad = [ K.variable( g ) for g in grads ]
-        #self.weights =  [self.iterations] + p_grad
+        self.weights =  [self.iterations] + p_grad
                
         
         for p, g, v, pre_g in zip(params, grads, psi, p_grad) :
