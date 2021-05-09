@@ -81,7 +81,7 @@ class NADIAN(Optimizer):
         if getattr(params, 'constraint', None) is not None:
             pre_p = params.constraint(pre_p)
         
-         c = params + self.mu *(params - pre_params)
+        c = params + self.mu *(params - pre_params)
             
         for p, g, v in zip(params, grads) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
