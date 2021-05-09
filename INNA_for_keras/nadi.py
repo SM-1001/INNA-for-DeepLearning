@@ -62,8 +62,8 @@ class NADIAN(Optimizer):
     def get_updates(self, loss, params):
         
         grads = self.get_gradients(loss, params)
-        accumulators = [K.zeros(p) for p in params]
-        pre_params = [K.zeros(p) for p in params]
+        accumulators = [K.variable(p) for p in params]
+        pre_params = [K.variable(p) for p in params]
         self.updates = [K.update_add(self.iterations, 1)]
         
         lr = self.lr
