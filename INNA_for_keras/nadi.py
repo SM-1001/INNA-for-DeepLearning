@@ -62,7 +62,7 @@ class NADIAN(Optimizer):
     def get_updates(self, loss, params):
         global c
        #grads = self.get_gradients(loss, params)
-        K.switch(self.iteration == 0, c=params, c=params + self.mu *(params - pre_p)
+        K.switch(self.iteration == 0, c=params, c=params + self.mu *(params - pre_params)
         grads = self.get_gradients(loss, c)
         self.updates = [K.update_add(self.iterations, 1)]
 
