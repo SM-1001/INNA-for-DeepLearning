@@ -60,11 +60,12 @@ class NADIAN(Optimizer):
     
     @interfaces.legacy_get_updates_support
     def get_updates(self, loss, params):
-        global c, pre_params, nest_v
+        
         grads = self.get_gradients(loss, params)
         accumulators = [K.zeros(p) for p in params]
         pre_params = [K.zeros(p) for p in params]
         self.updates = [K.update_add(self.iterations, 1)]
+        
         lr = self.lr
         if self.initial_decay > 0 :
             lr = lr * (1. / K.pow(1. + self.decay * K.cast(self.iterations,
@@ -72,8 +73,8 @@ class NADIAN(Optimizer):
         
         #psi such that initial speed is orthogonal
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
-        #self.weights =  [self.iterations] + psi
-        self.weights = accumulators   
+        self.weights =  [self.iterations] + psi
+        #self.weights = accumulators   
                
         for p, g, v, a, pre_p in zip(params, grads, psi, accumulators, pre_params) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
