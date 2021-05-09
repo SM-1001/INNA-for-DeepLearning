@@ -60,7 +60,9 @@ class NADIAN(Optimizer):
     
     @interfaces.legacy_get_updates_support
     def get_updates(self, loss, params):
-        
+        global pre_grad
+        pre_grad = [ K.variable( p ) for p in params ]
+        pre_grad = grad 
         grads = self.get_gradients(loss, params)
         self.updates = [K.update_add(self.iterations, 1)]
         
@@ -73,7 +75,7 @@ class NADIAN(Optimizer):
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
         self.weights =  [self.iterations] + psi
                
-        for p, g, v in zip(params, grads, psi) :
+        for p, g, v, pre_g in zip(params, grads, psi, pre_grad) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
             lr_t = lr
             
