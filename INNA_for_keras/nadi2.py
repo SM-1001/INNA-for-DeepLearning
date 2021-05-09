@@ -70,7 +70,7 @@ class NADIAN(Optimizer):
         
         #psi such that initial speed is orthogonal
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
-        self.weights =  [self.iterations] + psi
+        self.weights =  [self.iterations] - psi
                     
         
         for p, g, v in zip(params, grads, psi) :
