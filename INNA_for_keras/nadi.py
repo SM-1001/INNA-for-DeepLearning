@@ -61,8 +61,9 @@ class NADIAN(Optimizer):
     @interfaces.legacy_get_updates_support
     def get_updates(self, loss, params):
         global c
+        if 
        #grads = self.get_gradients(loss, params)
-        K.switch(self.iteration == 0, c=params, c=params + self.mu *(params - pre_params))
+        c = K.switch(self.iterations == 0, params, params + self.mu *(params - pre_params))
         grads = self.get_gradients(loss, c)
         self.updates = [K.update_add(self.iterations, 1)]
 
