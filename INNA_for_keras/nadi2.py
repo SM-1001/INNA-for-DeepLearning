@@ -69,7 +69,9 @@ class NADIAN(Optimizer):
                                     K.dtype(self.decay)),self.decaypower) )
         
         #psi such that initial speed is orthogonal
-        psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
+        #psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
+        psi = [ K.variable( (1. + self.alpha*self.beta)*p ) for p in params ]
+        
         self.weights =  [self.iterations] + psi
                     
         
@@ -91,7 +93,7 @@ class NADIAN(Optimizer):
              
             #p_t = (-1.* p_t) + self.mu*((-1. * p_t) - p)
             #p_t = p_t + self.mu*(p_t - p)
-            p_t *= -1.
+            #p_t *= -1.
                         
             #new_p = p_t
             new_p = p_t + self.mu*(p_t - p)
