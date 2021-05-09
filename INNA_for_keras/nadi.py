@@ -87,7 +87,7 @@ class NADIAN(Optimizer):
                 pre_g = g.constraint(pre_g)
             '''
             
-            pre_p = p_t
+            pre_p = p
 
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
