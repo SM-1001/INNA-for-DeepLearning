@@ -87,7 +87,7 @@ class NADIAN(Optimizer):
             '''
             
             pre_p = p
-
+            print('p=', p, 'pre_p=', pre_p)
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
                         v - self.beta**2*g + self.beta*self.speed_ini*g , v )
