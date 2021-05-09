@@ -61,18 +61,10 @@ class NADIAN(Optimizer):
     @interfaces.legacy_get_updates_support
     def get_updates(self, loss, params):
         global c, pre_params, nest_v
-        #if self.iterations == 0:
-        pre_params = params
-       #grads = self.get_gradients(loss, params)
-        nest_v = [p - pre_p for p, pre_p in zip(params, pre_params)]
-        if self.iterations == 0:
-            c = params
-        else :
-            c = [p + self.mu * n_v for p, n_v in zip(params, nest_v)]
-        #c = K.switch(self.iterations == 0, params, [p + self.mu * n_v for p, n_v in zip(params, nest_v)])
-        grads = self.get_gradients(loss, c)
+        grads = self.get_gradients(loss, params)
+        accumulators = [K.zeros(p) for p in params]
+        pre_params = [K.zeros(p) for p in params]
         self.updates = [K.update_add(self.iterations, 1)]
-
         lr = self.lr
         if self.initial_decay > 0 :
             lr = lr * (1. / K.pow(1. + self.decay * K.cast(self.iterations,
@@ -80,12 +72,10 @@ class NADIAN(Optimizer):
         
         #psi such that initial speed is orthogonal
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
-        self.weights =  [self.iterations] + psi
-           
-        
-        #c = params + self.mu *(params - pre_params)
-            
-        for p, g, v, pre_p in zip(params, grads, psi, pre_params) :
+        #self.weights =  [self.iterations] + psi
+        self.weights = accumulators   
+               
+        for p, g, v, a, pre_p in zip(params, grads, psi, accumulators, pre_params) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
             lr_t = lr
             
@@ -96,8 +86,8 @@ class NADIAN(Optimizer):
                 pre_g = g.constraint(pre_g)
             '''
             
-            pre_params = p_t
-            
+            pre_p = p_t
+
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
                         v - self.beta**2*g + self.beta*self.speed_ini*g , v )
@@ -106,6 +96,8 @@ class NADIAN(Optimizer):
             #p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * ((1. + self.mu) * g - self.mu * pre_g))
             p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
             
+            a = p_t + self.mu * (p_t - pre_p)
+              
             new_p = p_t
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
