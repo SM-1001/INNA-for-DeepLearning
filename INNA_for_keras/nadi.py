@@ -85,8 +85,7 @@ class NADIAN(Optimizer):
             if getattr(g, 'constraint', None) is not None:
                 pre_g = g.constraint(pre_g)
             '''
-            
-            pre_p = p
+          
             print('p=', p, 'pre_p=', pre_p)
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
@@ -96,7 +95,7 @@ class NADIAN(Optimizer):
             #p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * ((1. + self.mu) * g - self.mu * pre_g))
             p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
                          
-            new_p = p_t + self.mu * (p_t - pre_p)
+            new_p = p_t + self.mu * (p_t - p)
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
                 new_p = p.constraint(new_p)
