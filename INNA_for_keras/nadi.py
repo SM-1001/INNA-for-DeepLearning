@@ -59,13 +59,13 @@ class NADIAN(Optimizer):
         self.epsilon = epsilon
     
     @interfaces.legacy_get_updates_support
-    def get_updates(self, loss, params):
+    def get_updates(self, loss, params, pre_params):
        #grads = self.get_gradients(loss, params)
         if self.iterations == 0 :
-            pre_p = 0
+            pre_params = params
             c = params
         else :
-            c = params + self.mu *(params - pre_p)
+            c = params + self.mu *(params - pre_params)
         #K.switch(self.iteration == 0, c=params, c=params + self.mu *(params - pre_p)
         grads = self.get_gradients(loss, c)
         self.updates = [K.update_add(self.iterations, 1)]
@@ -78,13 +78,13 @@ class NADIAN(Optimizer):
         #psi such that initial speed is orthogonal
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
         self.weights =  [self.iterations] + psi
-        
+        '''
         pre_p = params
         # Apply constraints.
         if getattr(params, 'constraint', None) is not None:
             pre_p = params.constraint(pre_p)
-        
-        for p, g, v in zip(params, grads, psi) :
+        '''
+        for p, g, v, pre_p in zip(params, grads, psi, pre_params) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
             lr_t = lr
             
@@ -94,12 +94,12 @@ class NADIAN(Optimizer):
             if getattr(g, 'constraint', None) is not None:
                 pre_g = g.constraint(pre_g)
             '''
-            '''
+            
             pre_p = p_t
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
                 pre_p = p.constraint(pre_p)
-            '''
+            
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
                         v - self.beta**2*g + self.beta*self.speed_ini*g , v )
@@ -115,6 +115,7 @@ class NADIAN(Optimizer):
                 
             self.updates.append(K.update(v, v_t))
             self.updates.append(K.update(p, new_p))
+            self.updates.append(K.update(pre_p, pre_p))
             
         return self.updates
 
