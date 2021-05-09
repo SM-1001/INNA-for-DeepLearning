@@ -60,7 +60,7 @@ class NADIAN(Optimizer):
     
     @interfaces.legacy_get_updates_support
     def get_updates(self, loss, params):
-        #global pre_grad
+        global pre_grad
         pre_grad = [ K.variable( p ) for p in params ]
         pre_grad = grads 
         grads = self.get_gradients(loss, params)
