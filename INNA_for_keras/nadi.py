@@ -73,8 +73,8 @@ class NADIAN(Optimizer):
         
         #psi such that initial speed is orthogonal
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
-        self.weights =  [self.iterations] + psi
-        #self.weights = accumulators   
+        #self.weights =  [self.iterations] + psi
+        self.weights = accumulators   
                
         for p, g, v, a, pre_p in zip(params, grads, psi, accumulators, pre_params) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
