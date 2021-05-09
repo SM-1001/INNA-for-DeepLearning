@@ -99,8 +99,7 @@ class NADIAN(Optimizer):
              
             #new_p = K.switch(K.equal( self.iterations , 0 ),
              #           p_t , p_t + self.mu * (p_t - p))    
-            p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
-                + self.mu * (lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g))
+            p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g) + self.mu * (lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g))
             
             new_p = p_t
             #pre_g = g
