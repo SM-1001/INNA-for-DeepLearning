@@ -59,7 +59,7 @@ class NADIAN(Optimizer):
         self.epsilon = epsilon
     
     @interfaces.legacy_get_updates_support
-    def get_updates(self, loss, params, pre_params):
+    def get_updates(self, loss, params):
        #grads = self.get_gradients(loss, params)
         if self.iterations == 0 :
             pre_params = params
