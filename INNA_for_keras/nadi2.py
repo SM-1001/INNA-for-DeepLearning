@@ -82,10 +82,10 @@ class NADIAN(Optimizer):
             v_temp = K.switch( K.equal( self.iterations , 1 ),
                         v - self.beta**2*g + self.beta*self.speed_ini*g , v )
             #
-            v_t =  v_temp - lr_t * ( (self.alpha - 1./self.beta) * p + 1./self.beta * v_temp )
-            p_t = p - lr_t * ( (self.alpha - 1./self.beta) * p + 1./self.beta * v_temp + self.beta * g)
+            v_t =  v_temp + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp )
+            p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
              
-            p_t = p_t + self.mu*(p_t - p)
+            p_t = (-1.* p_t) + self.mu*((-1. * p_t) - p)
                         
             new_p = p_t
             # Apply constraints.
