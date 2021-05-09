@@ -60,9 +60,9 @@ class NADIAN(Optimizer):
     
     @interfaces.legacy_get_updates_support
     def get_updates(self, loss, params):
-        global pre_grad
+        #global pre_grad
         grads = self.get_gradients(loss, params)
-        pre_grad = [ K.variable( g ) for g in grads ]
+        #pre_grad = [ K.variable( g ) for g in grads ]
         self.updates = [K.update_add(self.iterations, 1)]
         
         lr = self.lr
@@ -74,16 +74,16 @@ class NADIAN(Optimizer):
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
         self.weights =  [self.iterations] + psi
                
-        for p, g, v, pre_g in zip(params, grads, psi, pre_grad) :
+        for p, g, v in zip(params, grads, psi) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
             lr_t = lr
             
-            '''
-            pre_g = g
+            
+            #pre_g = g
             # Apply constraints.
             if getattr(g, 'constraint', None) is not None:
                 pre_g = g.constraint(pre_g)
-            '''
+            
           
             #This changes the initial speed (at iteration 1 only)
             v_temp = K.switch( K.equal( self.iterations , 1 ),
@@ -103,9 +103,8 @@ class NADIAN(Optimizer):
                 
             self.updates.append(K.update(v, v_t))
             self.updates.append(K.update(p, new_p))
+            self.updates.append(K.update(pre_g, g))
         
-        
-        pre_grad = grads 
         return self.updates
 
     def get_config(self):
