@@ -74,11 +74,11 @@ class NADIAN(Optimizer):
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
         self.weights =  [self.iterations] + psi
         
-        p_grad = [ K.variable( g ) for g in grads ]
-        self.weights =  [self.iterations] + p_grad
+        #p_grad = [ K.variable( g ) for g in grads ]
+        #self.weights =  [self.iterations] + p_grad
                
         
-        for p, g, v, pre_g in zip(params, grads, psi, p_grad) :
+        for p, g, v in zip(params, grads, psi) :
             #Warning, (p,v) correspond to (theta,psi) in the paper
             lr_t = lr
             
@@ -99,16 +99,18 @@ class NADIAN(Optimizer):
              
             #new_p = K.switch(K.equal( self.iterations , 0 ),
              #           p_t , p_t + self.mu * (p_t - p))    
-            #new_p = p_t + self.mu * (p_t - p)
+            p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
+                + self.mu * (lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g))
+            
             new_p = p_t
-            pre_g = g
+            #pre_g = g
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
                 new_p = p.constraint(new_p)
                 
             self.updates.append(K.update(v, v_t))
             self.updates.append(K.update(p, new_p))
-            self.updates.append(K.update(pre_g, g))
+            #self.updates.append(K.update(pre_g, g))
             #self.updates.append(K.update(pre_g, g))
         
         return self.updates
