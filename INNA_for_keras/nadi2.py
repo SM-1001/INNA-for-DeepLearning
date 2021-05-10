@@ -85,18 +85,18 @@ class NADIAN(Optimizer):
                         v - self.beta**2*g + self.beta*self.speed_ini*g , v )
                         #v + self.beta**2*g - self.beta*self.speed_ini*g , v )
             
-            #v_t =  v_temp + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp )
-            v_t =  v_temp - lr_t * ( (self.alpha - 1./self.beta) * p + 1./self.beta * v_temp )
+            v_t =  v_temp + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp )
+            #v_t =  v_temp - lr_t * ( (self.alpha - 1./self.beta) * p + 1./self.beta * v_temp )
             
-            #p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
-            p_t = p - lr_t * ( (self.alpha - 1./self.beta) * p + 1./self.beta * v_temp + self.beta * g)
+            p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
+            #p_t = p - lr_t * ( (self.alpha - 1./self.beta) * p + 1./self.beta * v_temp + self.beta * g)
              
             #p_t = (-1.* p_t) + self.mu*((-1. * p_t) - p)
-            #p_t = p_t + self.mu*(p_t - p)
+            p_t = p_t + self.mu*(p_t - p)
             #p_t *= -1.
                         
-            #new_p = p_t
-            new_p = p_t + self.mu * (-p_t + p)
+            new_p = p_t
+            #new_p = p_t + self.mu * (-p_t + p)
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
                 new_p = p.constraint(new_p)
