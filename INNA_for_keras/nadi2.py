@@ -99,11 +99,11 @@ class NADIAN(Optimizer):
             #df = pd.DataFrame(p_t)
             #df.to_csv('p_t.csv')
             #p_t = (-1.* p_t) + self.mu*((-1. * p_t) - p)
-            p_t = p_t + self.mu*(p_t - p)
+            #p_t = p_t + self.mu*(p_t - p)
             #p_t *= -1.
                         
-            new_p = p_t
-            #new_p = p_t + self.mu * (-p_t + p)
+            #new_p = p_t
+            new_p = p_t + self.mu * (-p_t + p)
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
                 new_p = p.constraint(new_p)
