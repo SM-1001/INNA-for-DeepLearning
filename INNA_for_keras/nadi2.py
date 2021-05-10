@@ -1,6 +1,7 @@
 from keras.optimizers import *
 from keras.legacy import interfaces
 from keras import backend as K
+import pandas as pd
 
 class NADIAN(Optimizer):
     """
@@ -92,6 +93,8 @@ class NADIAN(Optimizer):
             #p_t = p - lr_t * ( (self.alpha - 1./self.beta) * p + 1./self.beta * v_temp + self.beta * g)
              
             print("p_t=", p_t)
+            df = pd.DataFrame(p_t)
+            df.to_csv('p_t.csv')
             #p_t = (-1.* p_t) + self.mu*((-1. * p_t) - p)
             p_t = p_t + self.mu*(p_t - p)
             #p_t *= -1.
