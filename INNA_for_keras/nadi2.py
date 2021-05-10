@@ -94,7 +94,8 @@ class NADIAN(Optimizer):
             p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
             #p_t = p - lr_t * ( (self.alpha - 1./self.beta) * p + 1./self.beta * v_temp + self.beta * g)
              
-            tf.print("p_t=", p_t)
+            print("p_t=", p_t)
+            print("p=", p)
             #df = pd.DataFrame(p_t)
             #df.to_csv('p_t.csv')
             #p_t = (-1.* p_t) + self.mu*((-1. * p_t) - p)
