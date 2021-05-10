@@ -67,9 +67,9 @@ class NADIAN(Optimizer):
         self.updates = [K.update_add(self.iterations, 1)]
         
         lr = self.lr
-        #if self.initial_decay > 0 :
-            #lr = lr * (1. / K.pow(1. + self.decay * K.cast(self.iterations,
-                                    #K.dtype(self.decay)),self.decaypower) )
+        if self.initial_decay > 0 :
+            lr = lr * (1. / K.pow(1. + self.decay * K.cast(self.iterations,
+                                    K.dtype(self.decay)),self.decaypower) )
         
         #psi such that initial speed is orthogonal
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
@@ -103,7 +103,7 @@ class NADIAN(Optimizer):
             #p_t *= -1.
                         
             #new_p = p_t
-            new_p = p_t + self.mu * (p_t - p)
+            new_p = p_t + self.mu * (-p_t + p)
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
                 new_p = p.constraint(new_p)
