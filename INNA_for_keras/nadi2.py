@@ -73,7 +73,6 @@ class NADIAN(Optimizer):
         
         #psi such that initial speed is orthogonal
         psi = [ K.variable( (1.-self.alpha*self.beta)*p ) for p in params ]
-        #psi = [ K.variable( (1. + self.alpha*self.beta)*p ) for p in params ]
         
         self.weights =  [self.iterations] + psi
                     
@@ -94,8 +93,8 @@ class NADIAN(Optimizer):
             p_t = p + lr_t * ( (1./self.beta - self.alpha) * p - 1./self.beta * v_temp - self.beta * g)
             #p_t = p - lr_t * ( (self.alpha - 1./self.beta) * p + 1./self.beta * v_temp + self.beta * g)
              
-            print("p_t=", p_t)
-            print("p=", p)
+            #print("p_t=", p_t)
+            #print("p=", p)
             #df = pd.DataFrame(p_t)
             #df.to_csv('p_t.csv')
             #p_t = (-1.* p_t) + self.mu*((-1. * p_t) - p)
@@ -105,6 +104,7 @@ class NADIAN(Optimizer):
             #new_p = p_t
             p_v = self.mu * K.get_value(p_t - p)
             new_p = K.get_value( p_t + p_v) 
+            
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
                 new_p = p.constraint(new_p)
