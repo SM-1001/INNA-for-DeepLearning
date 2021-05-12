@@ -103,7 +103,7 @@ class NADIAN(Optimizer):
                         
             #new_p = p_t
             
-            new_p = p_t + self.mu * K.get_value(p_t - p)
+            new_p = p_t + self.mu * (p_t - p)
             
             # Apply constraints.
             if getattr(p, 'constraint', None) is not None:
